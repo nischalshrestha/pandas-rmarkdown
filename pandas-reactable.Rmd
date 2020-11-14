@@ -1,0 +1,131 @@
+---
+title: "Pandas Reactable"
+author: "Nischal Shrestha"
+date: "10/16/2020"
+# output: learnr::tutorial
+# runtime: shiny_prerendered
+output:
+  html_document:
+    theme: cosmo
+---
+
+```{r setup, include = FALSE}
+# library(learnr)
+library(magrittr)
+library(dplyr)
+library(reticulate)
+library(reactable)
+library(gt)
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+# custom script with helper functions
+source(here::here("R", "utils.R"))
+home_path <- here::here("data/")
+nba_data_path <- paste0(home_path, "nba.csv")
+rnba <- read.csv(nba_data_path)
+```
+
+# Import libraries
+
+```{python}
+import pandas as pd
+import numpy as np
+```
+
+# simple example
+
+```{python}
+arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']),
+         np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])]
+arrays
+```
+
+Example of what a Series with MultiIndex looks like:
+
+```{python}
+s = pd.Series(np.random.randn(8), index = arrays, name = 'a')
+s.index
+# you can get the list representation of it which could be useful to translate via `reticulate`
+s.index.values.tolist()
+```
+
+Example of what a DataFrame with MultiIndex looks like:
+
+```{python}
+df = pd.DataFrame(np.random.randn(8, 4), index = arrays, columns=['a','b','c','d'])
+print(df.index)
+df
+```
+
+We can also directly set MultiIndex
+
+```{python}
+tuples = list(zip(*arrays))
+index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
+index
+```
+
+Notice though, that when we set the index to this MultiIndex that has names for the levels, we get a visually different output:
+
+```{python}
+df = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d'])
+print(df.index)
+df
+```
+
+```{python}
+arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']),
+         np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])]
+tuples = list(zip(*arrays))
+index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
+df = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d'])
+df
+```
+
+
+This is to give you a visual indication that we have multiple row indices and they're set at a lower height than the columns.
+
+<!-- # df.set_index('first', append=True) -->
+
+
+
+# nba example
+
+<!-- ## Read data -->
+
+```{python nba_setup}
+import pandas as pd
+nba = pd.read_csv(r.nba_data_path)
+nba
+```
+
+<!-- ## Tidy data -->
+
+```{python}
+testing = {'Date':'date'}
+column_names = {
+  'Date': 'date', 
+  'Start (ET)': 'start',
+  'Unamed: 2': 'box', 
+  'Visitor/Neutral': 'away_team',
+  'PTS': 'away_points', 
+  'Home/Neutral': 'home_team',
+  'PTS.1': 'home_points', 
+  'Unamed: 7': 'n_ot'
+}
+```
+
+```{python}
+(
+  nba.rename(columns=column_names)
+    .dropna(thresh=4)
+    [['date', 'away_team', 'away_points', 'home_team', 'home_points']]
+    .assign(date=lambda x: pd.to_datetime(x['date'], format='%a, %b %d, %Y'))
+    # .set_index('date', append=True)
+    # .rename_axis(['game_id', 'date'])
+    # .sort_index()
+)
+```
+
+
+
+
