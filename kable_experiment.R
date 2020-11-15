@@ -6,20 +6,26 @@ library(reticulate)
 
 source(here::here("R/utils.R"))
 
+#' Takes in an unconverted Python dataframe and outputs a kableExtra table.
+#'
+#' @param df The unocvertend Python dataframe
+#' @param rmd This is a flag to render in the RStudio IDE for TRUE, FALSE in a rendered document
+#'
+#' @return A character vector of the table source code (very similar to `kable`)
+#' @export
+#'
+#' @examples
 kable_pandas <- function(df, rmd = FALSE) {
-  # grab the python df
-  # note how we use py_eval instead of using py$df since we want to retain the python
-  # structure still to check things like MultiIndex
   is_multi_index <- class(df$index)[[1]] == "pandas.core.indexes.multi.MultiIndex"
   
   # to curb performance costs, let's slice
-  if (df$shape[[1]] > 20 && is_multi_index) {
+  if (df$shape[[1]] > 30 && is_multi_index) {
     # unfortunately, we don't seem to have the ability to use slices 
     # cleanly with `reticulate` yet, this hack assumes your dataframe with be 
     # named `df` ... yikes! but works!
     df <- reticulate::py_eval("df.loc[slice(None, ), ].iloc[:9,]")
-  } else if (df$shape[[1]] > 20) {
-    df <- df$head(20)
+  } else if (df$shape[[1]] > 30) {
+    df <- df$head(30)
   }
   
   # setup an R dataframe based on `df`
@@ -41,8 +47,8 @@ kable_pandas <- function(df, rmd = FALSE) {
   # base kbl
   setup_kbl <- rdf %>% 
     # this retains color for the row Index columns
-    rename_with(function(x) cell_spec(x, "html", color = "black"), any_of(row_index_cols)) %>% 
-    kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index) 
+    dplyr::rename_with(function(x) kableExtra::cell_spec(x, "html", color = "black"), dplyr::any_of(row_index_cols)) %>% 
+    kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index)
   
   if (rmd) {
     setup_kbl <- setup_kbl %>%
