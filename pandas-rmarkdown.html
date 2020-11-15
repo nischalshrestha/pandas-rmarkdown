@@ -588,14 +588,14 @@ summary {
 <p>Ok, fair question. Well, one day I was building a lesson in Python and I just had it with how ugly the default pandas DataFrame output looked on rmarkdown. Here’s an example of a dataframe using <code>pandas</code>:</p>
 <pre><code>##                      a         b         c         d
 ## first second                                        
-## bar   one     0.240788 -1.350810  0.458041 -0.600936
-##       two    -0.928607  0.112557 -0.516424  0.171633
-## baz   one     1.101175  0.517168  0.773175  0.951954
-##       two     0.417431  1.145936  0.901718  1.364817
-## foo   one     0.099698 -2.126908 -0.198172  1.207670
-##       two     1.095687 -0.663380  0.040860 -0.173002
-## qux   one    -0.378644  1.167660  0.452507  1.638301
-##       two     0.628535 -0.401329  1.268657  1.078144</code></pre>
+## bar   one    -0.707417 -1.561605  0.591046  0.045068
+##       two     0.180165  0.228758  0.657535  2.274760
+## baz   one    -0.099307  1.830724  1.859154 -1.053921
+##       two     0.301246  0.765056 -0.735875 -1.480678
+## foo   one    -0.659371 -0.505295 -0.101757 -1.152915
+##       two    -0.515132  0.959727 -1.016075  0.344367
+## qux   one     0.523800 -0.707980 -2.295995  1.093572
+##       two    -0.686107  0.107423  1.180302 -0.993163</code></pre>
 <p>Looking at this, I thought to myself we have all these amazing R packages for RMarkdown to render pretty dataframes so why not use them? I know what you’re thinking: “But, you can’t do that since all these great R packages only accept R dataframes!”</p>
 <p>Yes, fair point. But, what if I made an R dataframe “look” like a Python dataframe so I can still use these packages?</p>
 <p align="center">
@@ -658,16 +658,16 @@ bar
 one
 </td>
 <td style="text-align:left;">
-0.2407881
+-0.7074167
 </td>
 <td style="text-align:left;">
--1.3508103
+-1.5616048
 </td>
 <td style="text-align:left;">
-0.4580410
+0.5910463
 </td>
 <td style="text-align:left;">
--0.6009363
+0.0450676
 </td>
 </tr>
 <tr>
@@ -675,16 +675,16 @@ one
 two
 </td>
 <td style="text-align:left;">
--0.9286071
+0.1801652
 </td>
 <td style="text-align:left;">
-0.1125573
+0.2287585
 </td>
 <td style="text-align:left;">
--0.5164236
+0.6575351
 </td>
 <td style="text-align:left;">
-0.1716327
+2.2747604
 </td>
 </tr>
 <tr>
@@ -695,16 +695,16 @@ baz
 one
 </td>
 <td style="text-align:left;">
-1.1011746
+-0.0993075
 </td>
 <td style="text-align:left;">
-0.5171680
+1.8307235
 </td>
 <td style="text-align:left;">
-0.7731750
+1.8591542
 </td>
 <td style="text-align:left;">
-0.9519543
+-1.0539209
 </td>
 </tr>
 <tr>
@@ -712,16 +712,16 @@ one
 two
 </td>
 <td style="text-align:left;">
-0.4174309
+0.3012457
 </td>
 <td style="text-align:left;">
-1.1459356
+0.7650564
 </td>
 <td style="text-align:left;">
-0.9017185
+-0.7358752
 </td>
 <td style="text-align:left;">
-1.3648172
+-1.4806777
 </td>
 </tr>
 <tr>
@@ -732,16 +732,16 @@ foo
 one
 </td>
 <td style="text-align:left;">
-0.0996981
+-0.6593712
 </td>
 <td style="text-align:left;">
--2.1269078
+-0.5052946
 </td>
 <td style="text-align:left;">
--0.1981719
+-0.1017570
 </td>
 <td style="text-align:left;">
-1.2076704
+-1.1529146
 </td>
 </tr>
 <tr>
@@ -749,16 +749,16 @@ one
 two
 </td>
 <td style="text-align:left;">
-1.0956867
+-0.5151323
 </td>
 <td style="text-align:left;">
--0.6633800
+0.9597274
 </td>
 <td style="text-align:left;">
-0.0408600
+-1.0160751
 </td>
 <td style="text-align:left;">
--0.1730024
+0.3443665
 </td>
 </tr>
 <tr>
@@ -769,16 +769,16 @@ qux
 one
 </td>
 <td style="text-align:left;">
--0.3786438
+0.5237999
 </td>
 <td style="text-align:left;">
-1.1676595
+-0.7079798
 </td>
 <td style="text-align:left;">
-0.4525070
+-2.2959953
 </td>
 <td style="text-align:left;">
-1.6383011
+1.0935723
 </td>
 </tr>
 <tr>
@@ -786,16 +786,16 @@ one
 two
 </td>
 <td style="text-align:left;">
-0.6285350
+-0.6861074
 </td>
 <td style="text-align:left;">
--0.4013291
+0.1074226
 </td>
 <td style="text-align:left;">
-1.2686565
+1.1803021
 </td>
 <td style="text-align:left;">
-1.0781444
+-0.9931634
 </td>
 </tr>
 </tbody>
@@ -986,7 +986,7 @@ df.index</code></pre>
 </div>
 <div id="setting-the-scene-with-reticulate" class="section level2">
 <h2>Setting the scene with reticulate</h2>
-<p>The first thing I wanted to do was “Wizard of Oz” the basic data types and their formatting, i.e. make an R dataframe look Pythonic. 🧹 🐍</p>
+<p>The first thing I wanted to do was “Wizard of Oz” the basic data types and their formatting, i.e. make an R dataframe look Pythonic. 🧙‍♀️ 🐍</p>
 <p>This is where the packages <code>dplyr</code>, <code>reticulate</code> and <code>formattable</code> helped me:</p>
 <pre class="r"><code>python_df &lt;- function(pydf) {
   # if dataframe has a MultiIndex, reset index to turn them into regular columns
@@ -1620,6 +1620,141 @@ LGA
 10
 </td>
 </tr>
+<tr>
+<td style="text-align:left;vertical-align: top !important;" rowspan="3">
+2013-01-01 04:00:00
+</td>
+<td style="text-align:left;">
+JFK
+</td>
+<td style="text-align:left;">
+2013
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:left;">
+39.92
+</td>
+<td style="text-align:left;">
+28.04
+</td>
+<td style="text-align:left;">
+62.21
+</td>
+<td style="text-align:left;">
+250
+</td>
+<td style="text-align:left;">
+17.26170
+</td>
+<td style="text-align:left;">
+NaN
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+1012.6
+</td>
+<td style="text-align:left;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+LGA
+</td>
+<td style="text-align:left;">
+2013
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:left;">
+41.00
+</td>
+<td style="text-align:left;">
+26.06
+</td>
+<td style="text-align:left;">
+54.97
+</td>
+<td style="text-align:left;">
+260
+</td>
+<td style="text-align:left;">
+17.26170
+</td>
+<td style="text-align:left;">
+25.31716
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+1011.8
+</td>
+<td style="text-align:left;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+EWR
+</td>
+<td style="text-align:left;">
+2013
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:left;">
+39.92
+</td>
+<td style="text-align:left;">
+28.04
+</td>
+<td style="text-align:left;">
+62.21
+</td>
+<td style="text-align:left;">
+250
+</td>
+<td style="text-align:left;">
+12.65858
+</td>
+<td style="text-align:left;">
+NaN
+</td>
+<td style="text-align:left;">
+0
+</td>
+<td style="text-align:left;">
+1012.2
+</td>
+<td style="text-align:left;">
+10
+</td>
+</tr>
 </tbody>
 </table>
 <p>Try hovering over the rows to see an extra visual aid that we’re looking at a <code>MultiIndex</code>!</p>
@@ -1648,56 +1783,6 @@ LGA
 <li><a href="https://renkun-ken.github.io/formattable/index.html">{formattable}</a></li>
 <li><a href="https://github.com/hadley/nycflights13">{nycflights13}</a></li>
 </ul>
-<!-- This is if we wanted the python dataframe to look like R for the date -->
-<!-- df = pd.read_csv(r.weather_data_path, parse_dates=['time_hour']) -->
-<!-- df.set_index('time_hour', inplace=True) -->
-<!-- df.index = pd.to_datetime(df.index.tz_convert('US/Eastern').strftime('%m-%d-%Y %H:%M:%S')) -->
-<!-- df.index -->
-<!-- ## Import libraries -->
-<!-- Let's first talk about what a Python DataFrame looks like in the first place  -->
-<!-- ```{python} -->
-<!-- import pandas as pd -->
-<!-- import numpy as np -->
-<!-- ``` -->
-<!-- ## Simple example -->
-<!-- ```{python} -->
-<!-- arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']), -->
-<!--          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])] -->
-<!-- arrays -->
-<!-- ``` -->
-<!-- Example of what a Series with MultiIndex looks like: -->
-<!-- ```{python} -->
-<!-- s = pd.Series(np.random.randn(8), index = arrays, name = 'a') -->
-<!-- s.index -->
-<!-- # you can get the list representation of it which could be useful to translate via `reticulate` -->
-<!-- s.index.values.tolist() -->
-<!-- ``` -->
-<!-- Example of what a DataFrame with MultiIndex looks like: -->
-<!-- ```{python} -->
-<!-- df = pd.DataFrame(np.random.randn(8, 4), index = arrays, columns=['a','b','c','d']) -->
-<!-- print(df.index) -->
-<!-- df -->
-<!-- ``` -->
-<!-- We can also directly set MultiIndex -->
-<!-- ```{python} -->
-<!-- tuples = list(zip(*arrays)) -->
-<!-- index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second']) -->
-<!-- index -->
-<!-- ``` -->
-<!-- Notice though, that when we set the index to this MultiIndex that has names for the levels, we get a visually different output: -->
-<!-- ```{python} -->
-<!-- df = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d']) -->
-<!-- print(df.index) -->
-<!-- df -->
-<!-- ``` -->
-<!-- ```{python} -->
-<!-- arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']), -->
-<!--          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])] -->
-<!-- tuples = list(zip(*arrays)) -->
-<!-- index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second']) -->
-<!-- df = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d']) -->
-<!-- df -->
-<!-- ``` -->
 <!-- This is to give you a visual indication that we have multiple row indices and they're set at a lower height than the columns. -->
 </div>
 

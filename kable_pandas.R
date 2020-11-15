@@ -19,13 +19,13 @@ kable_pandas <- function(df, rmd = FALSE) {
   is_multi_index <- class(df$index)[[1]] == "pandas.core.indexes.multi.MultiIndex"
   
   # to curb performance costs, let's slice
-  if (df$shape[[1]] > 30 && is_multi_index) {
+  if (df$shape[[1]] > 20 && is_multi_index) {
     # unfortunately, we don't seem to have the ability to use slices 
     # cleanly with `reticulate` yet, this hack assumes your dataframe with be 
     # named `df` ... yikes! but works!
-    df <- reticulate::py_eval("df.loc[slice(None, ), ].iloc[:9,]")
-  } else if (df$shape[[1]] > 30) {
-    df <- df$head(30)
+    df <- reticulate::py_eval("df.loc[slice(None, ), ].iloc[:12,]")
+  } else if (df$shape[[1]] > 20) {
+    df <- df$head(20)
   }
   
   # setup an R dataframe based on `df`

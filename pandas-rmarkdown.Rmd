@@ -15,11 +15,8 @@ library(emo)
 library(nycflights13)
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 # custom script with helper functions
-source(here::here("kable_experiment.R"))
-home_path <- here::here("data/")
-nba_data_path <- paste0(home_path, "nba.csv")
-weather_data_path <- paste0(home_path, "weather.csv")
-rnba <- read.csv(nba_data_path)
+source(here::here("kable_pandas.R"))
+weather_data_path <- here::here("data", "weather.csv")
 ```
 
 ```{python echo = FALSE}
@@ -322,72 +319,6 @@ I hope you have enjoyed this weird tutorial of how to pretty print Python datafr
 - [{kableExtra}](http://haozhu233.github.io/kableExtra/)
 - [{formattable}](https://renkun-ken.github.io/formattable/index.html)
 - [{nycflights13}](https://github.com/hadley/nycflights13)
-
-<!-- This is if we wanted the python dataframe to look like R for the date -->
-<!-- df = pd.read_csv(r.weather_data_path, parse_dates=['time_hour']) -->
-<!-- df.set_index('time_hour', inplace=True) -->
-<!-- df.index = pd.to_datetime(df.index.tz_convert('US/Eastern').strftime('%m-%d-%Y %H:%M:%S')) -->
-<!-- df.index -->
-
-<!-- ## Import libraries -->
-
-<!-- Let's first talk about what a Python DataFrame looks like in the first place  -->
-
-<!-- ```{python} -->
-<!-- import pandas as pd -->
-<!-- import numpy as np -->
-<!-- ``` -->
-
-<!-- ## Simple example -->
-
-<!-- ```{python} -->
-<!-- arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']), -->
-<!--          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])] -->
-<!-- arrays -->
-<!-- ``` -->
-
-<!-- Example of what a Series with MultiIndex looks like: -->
-
-<!-- ```{python} -->
-<!-- s = pd.Series(np.random.randn(8), index = arrays, name = 'a') -->
-<!-- s.index -->
-<!-- # you can get the list representation of it which could be useful to translate via `reticulate` -->
-<!-- s.index.values.tolist() -->
-<!-- ``` -->
-
-<!-- Example of what a DataFrame with MultiIndex looks like: -->
-
-<!-- ```{python} -->
-<!-- df = pd.DataFrame(np.random.randn(8, 4), index = arrays, columns=['a','b','c','d']) -->
-<!-- print(df.index) -->
-<!-- df -->
-<!-- ``` -->
-
-<!-- We can also directly set MultiIndex -->
-
-<!-- ```{python} -->
-<!-- tuples = list(zip(*arrays)) -->
-<!-- index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second']) -->
-<!-- index -->
-<!-- ``` -->
-
-<!-- Notice though, that when we set the index to this MultiIndex that has names for the levels, we get a visually different output: -->
-
-<!-- ```{python} -->
-<!-- df = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d']) -->
-<!-- print(df.index) -->
-<!-- df -->
-<!-- ``` -->
-
-
-<!-- ```{python} -->
-<!-- arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']), -->
-<!--          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])] -->
-<!-- tuples = list(zip(*arrays)) -->
-<!-- index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second']) -->
-<!-- df = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d']) -->
-<!-- df -->
-<!-- ``` -->
 
 
 <!-- This is to give you a visual indication that we have multiple row indices and they're set at a lower height than the columns. -->
