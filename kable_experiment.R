@@ -6,23 +6,34 @@ library(reticulate)
 
 source(here::here("R/utils.R"))
 
-kable_pandas <- function(pydf, rmd = FALSE) {
+kable_pandas <- function(df, rmd = FALSE) {
   # grab the python df
   # note how we use py_eval instead of using py$df since we want to retain the python
   # structure still to check things like MultiIndex
-  # pydf <- reticulate::py_eval(pydf_name)
+  is_multi_index <- class(df$index)[[1]] == "pandas.core.indexes.multi.MultiIndex"
   
-  # setup an R dataframe based on `pydf`
-  rdf <- python_df(pydf)
+  # to curb performance costs, let's slice
+  if (df$shape[[1]] > 20 && is_multi_index) {
+    # unfortunately, we don't seem to have the ability to use slices 
+    # cleanly with `reticulate` yet, this hack assumes your dataframe with be 
+    # named `df` ... yikes! but works!
+    df <- reticulate::py_eval("df.loc[slice(None, ), ].iloc[:9,]")
+  } else if (df$shape[[1]] > 20) {
+    df <- df$head(20)
+  }
+  
+  # setup an R dataframe based on `df`
+  rdf <- python_df(df)
   
   # grab the regular columns not part of the Index
-  columns <- pydf$columns$values
+  columns <- df$columns$values
   # then grab the Index columns
   rdf_column_names <- colnames(rdf)
   row_index_cols <- rdf_column_names[!(rdf_column_names %in% columns)]
   
   # this is the amount of space for the Index columns for grouping
   idx_column_space <- sum(!(colnames(rdf) %in% columns))
+  if (is_multi_index) idx_column_space + 1
   # this is the space for the rest of columns for grouping
   column_space <- rep(1, length(columns))
   names(column_space) <- columns
@@ -31,20 +42,21 @@ kable_pandas <- function(pydf, rmd = FALSE) {
   setup_kbl <- rdf %>% 
     # this retains color for the row Index columns
     rename_with(function(x) cell_spec(x, "html", color = "black"), any_of(row_index_cols)) %>% 
-    kableExtra::kbl(align = "l", escape = F, row.names = T) 
+    kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index) 
   
   if (rmd) {
     setup_kbl <- setup_kbl %>%
-      kableExtra::kable_paper()
+      kableExtra::kable_paper(full_width = T) %>%
+      kableExtra::kable_styling(bootstrap_options = c("hover", "responsive"), position = "center")
   } else {
     setup_kbl <- setup_kbl %>%
-      kableExtra::kable_styling(bootstrap_options = c("hover"), full_width = F, position = "center")
+      kableExtra::kable_styling(bootstrap_options = c("hover", "responsive"), position = "center")
   }
   
   final_kbl <- setup_kbl
   # check if it is a MultiIndex, `reticulate` will list other classes but the very first
   # one is the Python class
-  if (class(pydf$index)[[1]] == "pandas.core.indexes.multi.MultiIndex") {
+  if (is_multi_index) {
     # TODO a check to see if we have many more levels in which case we have to stack
     # the column levels and sometimes above the row indices. In such a case, we do 
     # not "raise" the columns and can skip coloring rows white
@@ -54,12 +66,13 @@ kable_pandas <- function(pydf, rmd = FALSE) {
     final_kbl <- 
       setup_kbl %>% 
       kableExtra::row_spec(0, color = "white") %>%
-      kableExtra::add_header_above(c(" " = idx_column_space + 1, column_space), align = "c", bold = T)
+      kableExtra::add_header_above(c(" " = idx_column_space, column_space), align = "c", bold = T, line = F) %>% 
+      kableExtra::collapse_rows(columns = 1, valign = "top")
   }
   
   final_kbl
 }
-# 
+
 # # this right assign may look weird, but actually it's great in cases when  
 # # indentation matters, such as python code string since we can properly
 # # copy paste almost as is
@@ -90,6 +103,18 @@ kable_pandas <- function(pydf, rmd = FALSE) {
 # TODO: use real life examples 
 # could replicate this
 # https://towardsdatascience.com/how-to-use-multiindex-in-pandas-to-level-up-your-analysis-aeac7f451fce
+
+# collapse_rows_dt <- data.frame(C1 = c(rep("a", 10), rep("b", 5)),
+#                                C2 = c(rep("c", 7), rep("d", 3), rep("c", 2), rep("d", 3)),
+#                                C3 = 1:15,
+#                                C4 = sample(c(0,1), 15, replace = TRUE))
+# 
+# kbl(collapse_rows_dt, align = "c", row.names = F) %>%
+#   # kable_paper(full_width = F) %>%
+#   column_spec(1, bold = T) %>%
+#   kable_styling(bootstrap_options = c("hover", "condensed"), full_width = F, position = "center") %>%
+#   collapse_rows(columns = 1:2, valign = "top")
+
 
 
 

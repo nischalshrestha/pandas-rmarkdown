@@ -52,18 +52,10 @@ Yes, fair point. But, what if I made an R dataframe "look" like a Python datafra
 
 In this post, I talk about how I was able to use `{reticulate}` to mimic a Python `DataFrame`, and `{kableExtra}` together with `{formattable}` R packages to give some love to Python DataFrames rendering in RMarkdown documents. In the end, we will end up with something like this:
 
-<!-- TODO: update final look here to be on grouped dataframes -->
-
-<!-- ```{r echo=FALSE} -->
-<!-- kable_pandas( -->
-<!--   pydf = reticulate::py_eval("df_basic") -->
-<!-- ) -->
-<!-- ``` -->
-<!-- and this for grouped dataframes: -->
 
 ```{r echo=FALSE}
 kable_pandas(
-  pydf = reticulate::py_eval("df_multi")
+  df = reticulate::py_eval("df_multi")
 )
 ```
 
@@ -71,13 +63,15 @@ Keep in mind, the solutions I present in this post are largely dirty hacks, but 
 
 # What does a `pandas.DataFrame` look like?
 
-For a "good enough" visual representation of a Python `DataFrame` in `pandas`, I thought about some differences that need to be handled:
+<!-- For a "good enough" visual representation of a Python `DataFrame` in `pandas`, I thought about some differences that need to be handled: -->
 
-- 0-indexing
-- Data types/structures with different output formats
-- Python's crazy thing called `Index`
+<!-- - 0-indexing -->
+<!-- - Data types/structures with different output formats -->
+<!-- - Python's crazy thing called `Index` -->
 
-Of course, there are probably plenty of other differences beyond these, but I decided to handle these for now. I will use the raw `weather.csv` dataset from the `nycflights13` [package](https://github.com/hadley/nycflights13) to demonstrate how Python dataframes look different and how we can make them look pretty when printing in RMarkdown.
+<!-- Of course, there are probably plenty of other differences beyond these, but I decided to handle these for now.  -->
+
+I will use the raw `weather.csv` dataset from the `nycflights13` [package](https://github.com/hadley/nycflights13) to demonstrate how Python dataframes look different and how we can make them look pretty when printing in RMarkdown.
 
 First, here's the R dataframe:
 
@@ -85,7 +79,7 @@ First, here's the R dataframe:
 nycflights13::weather
 ```
 
-Now, I'm going to do the good ol', library imports for `pandas` + `numpy` and set up our dataframe in Python with US/Eastern timezone:
+Let's import Python libraries `pandas` and `numpy` as well as set up our `weather` dataframe called `df` in Python with US/Eastern timezone:
 
 ```{python}
 import pandas as pd
@@ -123,7 +117,7 @@ df.index
 
 It's a `RangeIndex`, which is very similar to how we normally index R dataframes using numbers.
 
-But now, let's say we want to reshape our `weather` dataframe by time (`time_hour`) and then by airport:
+But now, let's say we want to reshape our `weather` dataframe by time (`time_hour`) and then by airport (`origin`):
 
 ```{python}
 df.set_index(['time_hour', 'origin'])
@@ -158,6 +152,13 @@ Neat! Note how there are two levels of `Index` here, which forms a `MultiIndex`.
 
 Now, let's see how we can use `reticulate`, `kableExtra`, and `formattable` to make an R `data.frame` look like this `pandas.DataFrame`.
 
+<!-- df.loc[(slice(None), ), ].iloc[:50, ] -->
+
+```{r}
+kable_pandas(
+  df = reticulate::py_eval("df")
+)
+```
 
 
 
@@ -217,6 +218,7 @@ Now, let's see how we can use `reticulate`, `kableExtra`, and `formattable` to m
 <!-- df -->
 <!-- ``` -->
 
+
 <!-- ```{python} -->
 <!-- arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']), -->
 <!--          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])] -->
@@ -228,45 +230,5 @@ Now, let's see how we can use `reticulate`, `kableExtra`, and `formattable` to m
 
 
 <!-- This is to give you a visual indication that we have multiple row indices and they're set at a lower height than the columns. -->
-
-
-<!-- # Real world example -->
-
-
-<!-- ```{python nba_setup} -->
-<!-- import pandas as pd -->
-<!-- nba = pd.read_csv(r.nba_data_path) -->
-<!-- nba -->
-<!-- ``` -->
-
-
-
-<!-- ```{python} -->
-<!-- testing = {'Date':'date'} -->
-<!-- column_names = { -->
-<!--   'Date': 'date',  -->
-<!--   'Start (ET)': 'start', -->
-<!--   'Unamed: 2': 'box',  -->
-<!--   'Visitor/Neutral': 'away_team', -->
-<!--   'PTS': 'away_points',  -->
-<!--   'Home/Neutral': 'home_team', -->
-<!--   'PTS.1': 'home_points',  -->
-<!--   'Unamed: 7': 'n_ot' -->
-<!-- } -->
-<!-- ``` -->
-
-<!-- ```{python} -->
-<!-- ( -->
-<!--   nba.rename(columns=column_names) -->
-<!--     .dropna(thresh=4) -->
-<!--     [['date', 'away_team', 'away_points', 'home_team', 'home_points']] -->
-<!--     .assign(date=lambda x: pd.to_datetime(x['date'], format='%a, %b %d, %Y')) -->
-<!--     # .set_index('date', append=True) -->
-<!--     # .rename_axis(['game_id', 'date']) -->
-<!--     # .sort_index() -->
-<!-- ) -->
-<!-- ``` -->
-
-<!-- # References -->
 
 

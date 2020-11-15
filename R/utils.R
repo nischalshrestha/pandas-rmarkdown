@@ -16,13 +16,13 @@ python_df <- function(pydf) {
   is_numeric_index <- all(!is.na(as.numeric(original_rownames)))
   
   # TODO check if dataframe is using MultiIndex
-  if ("pandas.core.indexes.multi.MultiIndex" %in% class(pydf$index)) {
+  if (identical(class(pydf$index)[[1]], "pandas.core.indexes.multi.MultiIndex")) {
+    # TODO do we really need to convert to csv? check if we can stop at just reset_index
     rdf <- as.data.frame(
       readr::read_csv(
         as.character(reticulate::py_call(pydf$reset_index)$to_csv(index = FALSE))
       )
     )
-    # FIXME this is currently failing for when the multiindex have string names for the index
     
     # TODO investigate whether we can get away with this for more than 2 levels etc.
     # in the case that we only set one index with something like `set_index('date', append=True)`
@@ -32,6 +32,7 @@ python_df <- function(pydf) {
       rdf <- rdf[2:length(rdf)]
     }
   } else if (is_numeric_index) {
+    # TODO same thing to check here: do we need to conver to csv?
     # 1) First, read it as csv to preserve types (except for NaNs)
     rdf <- as.data.frame(readr::read_csv(as.character(pydf$to_csv(index=FALSE))))
   } else {
