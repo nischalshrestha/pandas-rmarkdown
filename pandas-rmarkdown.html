@@ -583,19 +583,20 @@ summary {
 </div>
 
 
+<p><base target="_top"></base></p>
 <div id="but-why" class="section level1">
 <h1>But, why?</h1>
 <p>Ok, fair question. Well, one day I was building a lesson in Python and I just had it with how ugly the default pandas DataFrame output looked on rmarkdown. Here’s an example of a dataframe using <code>pandas</code>:</p>
 <pre><code>##                      a         b         c         d
 ## first second                                        
-## bar   one    -0.707417 -1.561605  0.591046  0.045068
-##       two     0.180165  0.228758  0.657535  2.274760
-## baz   one    -0.099307  1.830724  1.859154 -1.053921
-##       two     0.301246  0.765056 -0.735875 -1.480678
-## foo   one    -0.659371 -0.505295 -0.101757 -1.152915
-##       two    -0.515132  0.959727 -1.016075  0.344367
-## qux   one     0.523800 -0.707980 -2.295995  1.093572
-##       two    -0.686107  0.107423  1.180302 -0.993163</code></pre>
+## bar   one    -0.968239  1.024828 -0.840921  0.554284
+##       two    -0.396939 -0.834347  0.892285  0.218513
+## baz   one     1.513833  1.057282 -0.363941 -2.330879
+##       two     0.367996 -0.034973 -0.751400 -1.763568
+## foo   one    -0.473390  0.899462 -0.973908 -2.416373
+##       two    -1.733987 -0.887143  0.531582 -0.653264
+## qux   one     0.587566  1.167055  0.310256 -0.034143
+##       two    -0.633098  0.032764 -0.953743  0.187444</code></pre>
 <p>Looking at this, I thought to myself we have all these amazing R packages for RMarkdown to render pretty dataframes so why not use them? I know what you’re thinking: “But, you can’t do that since all these great R packages only accept R dataframes!”</p>
 <p>Yes, fair point. But, what if I made an R dataframe “look” like a Python dataframe so I can still use these packages?</p>
 <p align="center">
@@ -658,16 +659,16 @@ bar
 one
 </td>
 <td style="text-align:left;">
--0.7074167
+-0.9682389
 </td>
 <td style="text-align:left;">
--1.5616048
+1.0248283
 </td>
 <td style="text-align:left;">
-0.5910463
+-0.8409212
 </td>
 <td style="text-align:left;">
-0.0450676
+0.5542838
 </td>
 </tr>
 <tr>
@@ -675,16 +676,16 @@ one
 two
 </td>
 <td style="text-align:left;">
-0.1801652
+-0.3969390
 </td>
 <td style="text-align:left;">
-0.2287585
+-0.8343471
 </td>
 <td style="text-align:left;">
-0.6575351
+0.8922852
 </td>
 <td style="text-align:left;">
-2.2747604
+0.2185132
 </td>
 </tr>
 <tr>
@@ -695,16 +696,16 @@ baz
 one
 </td>
 <td style="text-align:left;">
--0.0993075
+1.5138334
 </td>
 <td style="text-align:left;">
-1.8307235
+1.0572822
 </td>
 <td style="text-align:left;">
-1.8591542
+-0.3639415
 </td>
 <td style="text-align:left;">
--1.0539209
+-2.3308791
 </td>
 </tr>
 <tr>
@@ -712,16 +713,16 @@ one
 two
 </td>
 <td style="text-align:left;">
-0.3012457
+0.3679958
 </td>
 <td style="text-align:left;">
-0.7650564
+-0.0349734
 </td>
 <td style="text-align:left;">
--0.7358752
+-0.7513996
 </td>
 <td style="text-align:left;">
--1.4806777
+-1.7635680
 </td>
 </tr>
 <tr>
@@ -732,16 +733,16 @@ foo
 one
 </td>
 <td style="text-align:left;">
--0.6593712
+-0.4733897
 </td>
 <td style="text-align:left;">
--0.5052946
+0.8994624
 </td>
 <td style="text-align:left;">
--0.1017570
+-0.9739082
 </td>
 <td style="text-align:left;">
--1.1529146
+-2.4163727
 </td>
 </tr>
 <tr>
@@ -749,16 +750,16 @@ one
 two
 </td>
 <td style="text-align:left;">
--0.5151323
+-1.7339870
 </td>
 <td style="text-align:left;">
-0.9597274
+-0.8871428
 </td>
 <td style="text-align:left;">
--1.0160751
+0.5315817
 </td>
 <td style="text-align:left;">
-0.3443665
+-0.6532638
 </td>
 </tr>
 <tr>
@@ -769,16 +770,16 @@ qux
 one
 </td>
 <td style="text-align:left;">
-0.5237999
+0.5875659
 </td>
 <td style="text-align:left;">
--0.7079798
+1.1670549
 </td>
 <td style="text-align:left;">
--2.2959953
+0.3102562
 </td>
 <td style="text-align:left;">
-1.0935723
+-0.0341428
 </td>
 </tr>
 <tr>
@@ -786,21 +787,21 @@ one
 two
 </td>
 <td style="text-align:left;">
--0.6861074
+-0.6330983
 </td>
 <td style="text-align:left;">
-0.1074226
+0.0327636
 </td>
 <td style="text-align:left;">
-1.1803021
+-0.9537425
 </td>
 <td style="text-align:left;">
--0.9931634
+0.1874436
 </td>
 </tr>
 </tbody>
 </table>
-<p>Keep in mind, the solutions I present in this post are largely dirty hacks, but it is truly amazing how far you can go with these packages, so let’s begin!</p>
+<p>Keep in mind, the solutions I present in this post are largely dirty hacks, but it is truly amazing how far you can go with these packages, so let’s begin! I’ll likely be brief, highlighting the crucial parts to making this work but if you want a closer look, all the data and images can be found <a href="https://github.com/nischalshrestha/pandas-rmarkdown">here</a>.</p>
 </div>
 <div id="what-does-a-pandas.dataframe-look-like" class="section level1">
 <h1>What does a <code>pandas.DataFrame</code> look like? 👀</h1>
@@ -986,7 +987,7 @@ df.index</code></pre>
 </div>
 <div id="setting-the-scene-with-reticulate" class="section level2">
 <h2>Setting the scene with reticulate</h2>
-<p>The first thing I wanted to do was “Wizard of Oz” the basic data types and their formatting, i.e. make an R dataframe look Pythonic. 🧙‍♀️ 🐍</p>
+<p>The first thing I wanted to do was “Wizard of Oz” the basic data types and their formatting, i.e. make an R dataframe look Pythonic. 🧙 🐍</p>
 <p>This is where the packages <code>dplyr</code>, <code>reticulate</code> and <code>formattable</code> helped me:</p>
 <pre class="r"><code>python_df &lt;- function(pydf) {
   # if dataframe has a MultiIndex, reset index to turn them into regular columns
@@ -1091,7 +1092,7 @@ rdf &lt;- rdf %&gt;%
       kableExtra::add_header_above(c(&quot; &quot; = idx_column_space, column_space), align = &quot;c&quot;, bold = T, line = F) %&gt;% 
       kableExtra::collapse_rows(columns = 1, valign = &quot;top&quot;)</code></pre>
 <p>Here, the <code>idx_column_space</code> is the amount of columns to take up with <code>&quot; &quot;</code> because I want empty space above the <code>MultiIndex</code> columns. As for the <code>column_space</code>, it’s a named list that provides key value pairs for the column name and the space the column should take up.</p>
-<p>Because we had repiting values for the <code>time_hour</code> column, one last trick is to use <code>kableExtra::collapse_rows(columns = 1, valign = &quot;top&quot;)</code> to white out repititions of the first column. Behold, the final output (with rows chopped for brevity):</p>
+<p>Because we had repiting values for the <code>time_hour</code> column, one last trick is to use <code>kableExtra::collapse_rows(columns = 1, valign = &quot;top&quot;)</code> to white out repititions of the first column, and align it to stick to the top of the cell. Behold, the final output (with rows chopped for brevity):</p>
 <pre class="r"><code>kable_pandas(
   df = reticulate::py_eval(&quot;df&quot;)
 )</code></pre>
@@ -1760,7 +1761,7 @@ NaN
 <p>Try hovering over the rows to see an extra visual aid that we’re looking at a <code>MultiIndex</code>!</p>
 </div>
 <div id="bonuses" class="section level2">
-<h2>Bonuses</h2>
+<h2>Bonuses! 🎁</h2>
 <p>If you use the <code>kable::kable_paper</code> you can actually get a pretty decent looking render in the RStudio IDE!!! 😮</p>
 <pre class="r"><code>kable_pandas(
   df = reticulate::py_eval(&quot;df&quot;),
@@ -1771,9 +1772,9 @@ NaN
 </p>
 </div>
 </div>
-<div id="conclusion" class="section level1">
-<h1>Conclusion</h1>
-<p>I hope you have enjoyed this weird tutorial of how to pretty print Python dataframes with RMarkdown. If you have any suggestions or ideas (or spot mistakes), please let me know! One can go even further with this by adding in column types to the columns, and maybe even making an interactive version with <code>reactable</code>.</p>
+<div id="closing-thoughts" class="section level1">
+<h1>Closing thoughts</h1>
+<p>I hope you have enjoyed this brief tutorial of how to pretty print Python dataframes with RMarkdown. If you have any questions, suggestions or spot mistakes, please let me know! It should be clear that we are just scractching the surface with making Python dataframes prettier in the RMarkdown universe. Using <code>kableExtra</code> was neat because it had just the right features to allow flexibility to pull this off! One could go even further with this exercise by adding in column type information to the columns just like <code>{DT}</code>, for example. Or, maybe even making an interactive version with <code>reactable</code>? 😉</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>

@@ -31,6 +31,8 @@ df_basic = pd.DataFrame(np.random.randn(8, 4), columns=['a','b','c','d'])
 df_multi = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d'])
 ```
 
+<base target="_top"/>
+
 # But, why?
 
 Ok, fair question. Well, one day I was building a lesson in Python and I just had it with how ugly the default pandas DataFrame output looked on rmarkdown. Here's an example of a dataframe using `pandas`:
@@ -55,7 +57,7 @@ kable_pandas(
 )
 ```
 
-Keep in mind, the solutions I present in this post are largely dirty hacks, but it is truly amazing how far you can go with these packages, so let's begin!
+Keep in mind, the solutions I present in this post are largely dirty hacks, but it is truly amazing how far you can go with these packages, so let's begin! I'll likely be brief, highlighting the crucial parts to making this work but if you want a closer look, all the data and images can be found [here](https://github.com/nischalshrestha/pandas-rmarkdown).
 
 # What does a `pandas.DataFrame` look like? `r emo::ji("eyes")`
 
@@ -283,7 +285,7 @@ final_kbl <-
 
 Here, the `idx_column_space` is the amount of columns to take up with `" "` because I want empty space above the `MultiIndex` columns. As for the `column_space`, it's a named list that provides key value pairs for the column name and the space the column should take up.
 
-Because we had repiting values for the `time_hour` column, one last trick is to use `kableExtra::collapse_rows(columns = 1, valign = "top")` to white out repititions of the first column. Behold, the final output (with rows chopped for brevity):
+Because we had repiting values for the `time_hour` column, one last trick is to use `kableExtra::collapse_rows(columns = 1, valign = "top")` to white out repititions of the first column, and align it to stick to the top of the cell. Behold, the final output (with rows chopped for brevity):
 
 ```{r}
 kable_pandas(
@@ -293,7 +295,7 @@ kable_pandas(
 
 Try hovering over the rows to see an extra visual aid that we're looking at a `MultiIndex`!
 
-## Bonuses
+## Bonuses! `r emo::ji("gift")`
 
 If you use the `kable::kable_paper` you can actually get a pretty decent looking render in the RStudio IDE!!! `r emo::ji("wow")`
 
@@ -309,9 +311,9 @@ kable_pandas(
 </p>
 
 
-# Conclusion
+# Closing thoughts
 
-I hope you have enjoyed this weird tutorial of how to pretty print Python dataframes with RMarkdown. If you have any suggestions or ideas (or spot mistakes), please let me know! One can go even further with this by adding in column types to the columns, and maybe even making an interactive version with `reactable`.
+I hope you have enjoyed this brief tutorial of how to pretty print Python dataframes with RMarkdown. If you have any questions, suggestions or spot mistakes, please let me know! It should be clear that we are just scractching the surface with making Python dataframes prettier in the RMarkdown universe. Using `kableExtra` was neat because it had just the right features to allow flexibility to pull this off! One could go even further with this exercise by adding in column type information to the columns just like `{DT}`, for example. Or, maybe even making an interactive version with `reactable`? `r emo::ji("wink")`
 
 # References
 
