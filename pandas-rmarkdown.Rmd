@@ -59,7 +59,12 @@ kable_pandas(
 
 Keep in mind, the solutions I present in this post are largely dirty hacks, but it is truly amazing how far you can go with these packages, so let's begin! I'll likely be brief, highlighting the crucial parts to making this work but if you want a closer look, all the data and images can be found [here](https://github.com/nischalshrestha/pandas-rmarkdown).
 
-# What does a `pandas.DataFrame` look like? `r emo::ji("eyes")`
+# Does it ... roll? `r emo::ji("eyes")`
+
+<p align="center">
+  <img src="images/panda_roll.gif">
+</p>
+
 
 For a "good enough" visual representation of a Python `DataFrame` in `pandas`, I thought about some differences that need to be handled:
 
@@ -152,9 +157,15 @@ Now, let's see how we can use `reticulate`, `kableExtra`, and `formattable` to m
 
 ## Setting the scene with reticulate 
 
-The first thing I wanted to do was "Wizard of Oz" the basic data types and their formatting, i.e. make an R dataframe look Pythonic. `r emo::ji("witch")` `r emo::ji("snake")`
+The first thing I wanted to do was "Wizard of Oz" the basic data types and their formatting, i.e. make an R dataframe look Pythonic. `r emo::ji("snake")`
 
-This is where the packages `dplyr`, `reticulate` and `formattable` helped me:
+### Wizard of Oz tricks
+
+<p align="center">
+  <img src="images/trickery.gif">
+</p>
+
+This is where we go a bit crazy by simulating a Python dataframe with an R dataframe using the  `reticulate` and `formattable` packages. I wrote a utility function because this became a very useful piece of code:
 
 ```{r eval=FALSE}
 python_df <- function(pydf) {
@@ -227,17 +238,13 @@ The first item is our Python dataframe's Index class which indicates we have a `
 pydf$reset_index()
 ```
 
-```
-            time_hour origin year month day hour  temp  dewp humid wind_dir wind_speed wind_gust precip pressure visib
-0 2013-01-01 01:00:00    EWR 2013     1   1    1 39.02 26.06 59.37      270   10.35702       NaN      0     1012    10
-1 2013-01-01 01:00:00    JFK 2013     1   1    1 39.02 26.06 59.37      260   12.65858       NaN      0   1012.6    10
-2 2013-01-01 01:00:00    LGA 2013     1   1    1 39.92 26.06 57.33      260   13.80936   23.0156      0   1011.9    10
-3 2013-01-01 02:00:00    LGA 2013     1   1    2    41 26.06 54.97      260    17.2617  25.31716      0   1011.5    10
-4 2013-01-01 02:00:00    EWR 2013     1   1    2 39.02 26.96 61.63      250    8.05546       NaN      0   1012.3    10
-5 2013-01-01 02:00:00    JFK 2013     1   1    2 39.02 26.06 59.37      270    11.5078       NaN      0   1012.4    10
+```{r echo=FALSE}
+python_df(reticulate::py_eval("df.head()"))
 ```
 
-If the dataframe does not have a `MultiIndex`, then we just convert it directly using `reticulate::py_to_r(pydf)`.
+The `time_hour` and `origin` are just regular columns now. If the dataframe does not have a `MultiIndex`, then we just convert it directly using `reticulate::py_to_r(pydf)`.
+
+### Formatting
 
 The next few tricks are somewhat self-explanatory but using some *very* handy `dplyr::mutate` + `dplyr::across` functions:
 
@@ -259,7 +266,7 @@ We format the R dataframe by:
 
 Phew! Now, we are ready to throw that `df` into `kableExtra`!
 
-## Creating the Python table with `kableExtra`
+## Pretty printing the Python table with `kableExtra`
 
 Now that we have our R pretending-to-be-a-Python-dataframe ready, let's talk about how `kableExtra` helps us for pretty printing.
 
@@ -267,20 +274,20 @@ I won't go over the setup part in much detail, but I want to highlight the "tric
 
 ```{r eval=FALSE}
 # base kbl
-  setup_kbl <- rdf %>% 
-    # this retains color for the row Index columns
-    dplyr::rename_with(function(x) kableExtra::cell_spec(x, "html", color = "black"), dplyr::any_of(row_index_cols)) %>% 
-    kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index)
+setup_kbl <- rdf %>% 
+  # this retains color for the row Index columns
+  dplyr::rename_with(function(x) kableExtra::cell_spec(x, "html", color = "black"), dplyr::any_of(row_index_cols)) %>% 
+  kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index)
 ```
 
 Essentially, `row_index_cols` are the `MultiIndex` columns, so this is making the first base `kableExtra::kbl` by making keeping those columns black. For my next trick, I "raised" the regular columns by coloring the regular columns white, and adding a header row like so:
 
 ```{r eval=FALSE}
 final_kbl <- 
-      setup_kbl %>% 
-      kableExtra::row_spec(0, color = "white") %>%
-      kableExtra::add_header_above(c(" " = idx_column_space, column_space), align = "c", bold = T, line = F) %>% 
-      kableExtra::collapse_rows(columns = 1, valign = "top")
+  setup_kbl %>% 
+  kableExtra::row_spec(0, color = "white") %>%
+  kableExtra::add_header_above(c(" " = idx_column_space, column_space), align = "c", bold = T, line = F) %>% 
+  kableExtra::collapse_rows(columns = 1, valign = "top")
 ```
 
 Here, the `idx_column_space` is the amount of columns to take up with `" "` because I want empty space above the `MultiIndex` columns. As for the `column_space`, it's a named list that provides key value pairs for the column name and the space the column should take up.
@@ -293,7 +300,8 @@ kable_pandas(
 )
 ```
 
-Try hovering over the rows to see an extra visual aid that we're looking at a `MultiIndex`!
+
+Try hovering over the rows to see an extra visual aid that we're looking at a `MultiIndex`! I don't know about you but that looks a lot better than the default output to me. `r emo::ji("smirk")`
 
 ## Bonuses! `r emo::ji("gift")`
 
@@ -321,8 +329,3 @@ I hope you have enjoyed this brief tutorial of how to pretty print Python datafr
 - [{kableExtra}](http://haozhu233.github.io/kableExtra/)
 - [{formattable}](https://renkun-ken.github.io/formattable/index.html)
 - [{nycflights13}](https://github.com/hadley/nycflights13)
-
-
-<!-- This is to give you a visual indication that we have multiple row indices and they're set at a lower height than the columns. -->
-
-

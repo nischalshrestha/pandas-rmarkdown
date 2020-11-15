@@ -10,12 +10,13 @@ source(here::here("R/utils.R"))
 #'
 #' @param df The unocvertend Python dataframe
 #' @param rmd This is a flag to render in the RStudio IDE for TRUE, FALSE in a rendered document
+#' @param show_rownames A flag to indicate whether to show the rownames for MultiIndex dataframes
 #'
 #' @return A character vector of the table source code (very similar to `kable`)
 #' @export
 #'
 #' @examples
-kable_pandas <- function(df, rmd = FALSE) {
+kable_pandas <- function(df, rmd = FALSE, show_rownames = FALSE) {
   is_multi_index <- class(df$index)[[1]] == "pandas.core.indexes.multi.MultiIndex"
   
   # to curb performance costs, let's slice
@@ -39,7 +40,13 @@ kable_pandas <- function(df, rmd = FALSE) {
   
   # this is the amount of space for the Index columns for grouping
   idx_column_space <- sum(!(colnames(rdf) %in% columns))
-  if (is_multi_index) idx_column_space + 1
+  # this is the MultiIndex column we want to use for `kableExtra::collapse_rows`
+  # by default, it's the first, but will be the second if we want to show rownames (indices)
+  collapse_column <- 1
+  if (show_rownames) {
+    idx_column_space <- idx_column_space + 1
+    collapse_column <- collapse_column + 1
+  }
   # this is the space for the rest of columns for grouping
   column_space <- rep(1, length(columns))
   names(column_space) <- columns
@@ -48,7 +55,7 @@ kable_pandas <- function(df, rmd = FALSE) {
   setup_kbl <- rdf %>% 
     # this retains color for the row Index columns
     dplyr::rename_with(function(x) kableExtra::cell_spec(x, "html", color = "black"), dplyr::any_of(row_index_cols)) %>% 
-    kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index)
+    kableExtra::kbl(align = "l", escape = F, row.names = show_rownames)
   
   if (rmd) {
     setup_kbl <- setup_kbl %>%
@@ -73,54 +80,8 @@ kable_pandas <- function(df, rmd = FALSE) {
       setup_kbl %>% 
       kableExtra::row_spec(0, color = "white") %>%
       kableExtra::add_header_above(c(" " = idx_column_space, column_space), align = "c", bold = T, line = F) %>% 
-      kableExtra::collapse_rows(columns = 1, valign = "top")
+      kableExtra::collapse_rows(columns = collapse_column, valign = "top")
   }
   
   final_kbl
 }
-
-# # this right assign may look weird, but actually it's great in cases when  
-# # indentation matters, such as python code string since we can properly
-# # copy paste almost as is
-# "
-# import pandas as pd
-# import numpy as np
-# 
-# # create pd.MultiIndex
-# arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']),
-#          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])]
-# tuples = list(zip(*arrays))
-# index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
-# 
-# # make a df with its Index as the MultiIndex
-# df = pd.DataFrame(np.random.randn(8, 4), columns=['a','b','c','d'])
-# df_multi = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','c','d'])
-# 
-# " -> setup_code
-# 
-# # run setup code
-# reticulate::py_run_string(setup_code)
-# 
-# # test cases
-# kable_pandas("df")
-# kable_pandas("df_multi")
-
-
-# TODO: use real life examples 
-# could replicate this
-# https://towardsdatascience.com/how-to-use-multiindex-in-pandas-to-level-up-your-analysis-aeac7f451fce
-
-# collapse_rows_dt <- data.frame(C1 = c(rep("a", 10), rep("b", 5)),
-#                                C2 = c(rep("c", 7), rep("d", 3), rep("c", 2), rep("d", 3)),
-#                                C3 = 1:15,
-#                                C4 = sample(c(0,1), 15, replace = TRUE))
-# 
-# kbl(collapse_rows_dt, align = "c", row.names = F) %>%
-#   # kable_paper(full_width = F) %>%
-#   column_spec(1, bold = T) %>%
-#   kable_styling(bootstrap_options = c("hover", "condensed"), full_width = F, position = "center") %>%
-#   collapse_rows(columns = 1:2, valign = "top")
-
-
-
-
