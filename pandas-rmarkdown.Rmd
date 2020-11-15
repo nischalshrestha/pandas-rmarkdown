@@ -165,7 +165,7 @@ The first thing I wanted to do was "Wizard of Oz" the basic data types and their
   <img src="images/trickery.gif">
 </p>
 
-This is where we go a bit crazy by simulating a Python dataframe with an R dataframe using the  `reticulate` and `formattable` packages. I wrote a utility function because this became a very useful piece of code:
+This is where we go a bit crazy by simulating a Python dataframe with an R dataframe using the  `reticulate` and `formattable` packages. I wrote a utility function because this became a very useful piece of [code](https://github.com/nischalshrestha/pandas-rmarkdown/blob/eacad5fafa1690bd9b281c652b1e3ed56f5d4dca/R/utils.R#L10-L30):
 
 ```{r eval=FALSE}
 python_df <- function(pydf) {
@@ -270,7 +270,7 @@ Phew! Now, we are ready to throw that `df` into `kableExtra`!
 
 Now that we have our R pretending-to-be-a-Python-dataframe ready, let's talk about how `kableExtra` helps us for pretty printing.
 
-I won't go over the setup part in much detail, but I want to highlight the "trick" to making it look like the Python dataframe had raised regular columns with MultiIndex columns at a normal height. In another utiliy function I [wrote](), I have this code:
+I won't go over the setup part in much detail, but I want to highlight the "trick" to making it look like the Python dataframe had raised regular columns with MultiIndex columns at a normal height. In another utiliy function I [wrote](https://github.com/nischalshrestha/pandas-rmarkdown/blob/eacad5fafa1690bd9b281c652b1e3ed56f5d4dca/kable_pandas.R#L19), I have this code:
 
 ```{r eval=FALSE}
 # base kbl
