@@ -35,7 +35,7 @@ df_multi = pd.DataFrame(np.random.randn(8, 4), index = index, columns=['a','b','
 
 # But, why?
 
-Ok, fair question. Well, one day I was building a lesson in Python and I just had it with how ugly the default pandas DataFrame output looked on rmarkdown. Here's an example of a dataframe using `pandas`:
+Ok, fair question. Well, one day I was building a lesson in Python and I just had it with how ugly the default pandas `DataFrame` output looked on RMarkdown. Here's an example of a dataframe using the popular Python package, [`pandas`](https://pandas.pydata.org/docs/):
 
 ```{python echo=FALSE, fig.align="center"}
 df_multi
@@ -49,7 +49,7 @@ Yes, fair point. But, what if I made an R dataframe "look" like a Python datafra
   <img src="images/challengeaccepted.gif" width="480" height="349">
 </p>
 
-In this post, I talk about how I was able to use `{reticulate}` to mimic a Python `DataFrame`, and `{kableExtra}` together with `{formattable}` R packages to give some love to Python DataFrames rendering in RMarkdown documents. In the end, we will end up with something like this (hover over the rows!):
+In this post, I talk about how I was able to use [`{reticulate}`](https://rpubs.com/jpfranco123/reticulate) to mimic a Python `DataFrame`, and [`{kableExtra}`](http://haozhu233.github.io/kableExtra/) together with [`{formattable}`](https://renkun-ken.github.io/formattable/index.html) R packages to give some love to Python DataFrames rendering in RMarkdown documents. In the end, we will end up with something like this (hover over the rows!):
 
 ```{r echo=FALSE}
 kable_pandas(
@@ -232,7 +232,12 @@ class(pydf$index)
 [4] "pandas.core.base.PandasObject"        "pandas.core.accessor.DirNamesMixin"   "python.builtin.object"  
 ```
 
-The first item is our Python dataframe's Index class which indicates we have a `MultiIndex`. The subsequent `pydf$reset_index()` then does a dance by turning the previous `MultiIndex` columns into regular columns, and returning a converted version to an R data.frame, where the `time_hour` and `origin` are back to being regulars:
+The first item is our Python dataframe's Index class which indicates we have a `MultiIndex`. We could try to convert the Python DataFrame with a MultiIndex directly with a `reticulate::py_to_r` but, we lose those special `time_hour` and `origin` columns. (If any `reticulate` expert knows why, let me know!)
+
+To account for this edge case, we instead execute `pydf$reset_index()` that does a 2-step dance of:
+
+- turning the previous `MultiIndex` columns into regular columns, and 
+- returning a converted version to an R data.frame, where the `time_hour` and `origin` are back to being regulars
 
 ```{r, eval=FALSE}
 pydf$reset_index()
@@ -270,6 +275,8 @@ Phew! Now, we are ready to throw that `df` into `kableExtra`!
 
 Now that we have our R pretending-to-be-a-Python-dataframe ready, let's talk about how `kableExtra` helps us for pretty printing.
 
+### Bolding MultiIndex columns
+
 I won't go over the setup part in much detail, but I want to highlight the "trick" to making it look like the Python dataframe had raised regular columns with MultiIndex columns at a normal height. In another utiliy function I [wrote](https://github.com/nischalshrestha/pandas-rmarkdown/blob/eacad5fafa1690bd9b281c652b1e3ed56f5d4dca/kable_pandas.R#L19), I have this code:
 
 ```{r eval=FALSE}
@@ -280,7 +287,11 @@ setup_kbl <- rdf %>%
   kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index)
 ```
 
-Essentially, `row_index_cols` are the `MultiIndex` columns, so this is making the first base `kableExtra::kbl` by making keeping those columns black. For my next trick, I "raised" the regular columns by coloring the regular columns white, and adding a header row like so:
+Essentially, `row_index_cols` are the `MultiIndex` columns, so this is making the first base `kableExtra::kbl` by making keeping those columns black. 
+
+### Raise the regular columns
+
+For my next trick, I "raised" the regular columns by coloring the regular columns white, and adding a header row like so:
 
 ```{r eval=FALSE}
 final_kbl <- 
@@ -292,7 +303,9 @@ final_kbl <-
 
 Here, the `idx_column_space` is the amount of columns to take up with `" "` because I want empty space above the `MultiIndex` columns. As for the `column_space`, it's a named list that provides key value pairs for the column name and the space the column should take up.
 
-Because we had repiting values for the `time_hour` column, one last trick is to use `kableExtra::collapse_rows(columns = 1, valign = "top")` to white out repititions of the first column, and align it to stick to the top of the cell. Behold, the final output (with rows chopped for brevity):
+### Display Multirow cells
+
+Remember how we did the `pydf$reset_index()` from before for our Python `DataFrame` that has a `MultiIndex`? Well, that produced repeating values for our `time_hour` column. So, one last trick to display this properly is to use `kableExtra::collapse_rows(columns = 1, valign = "top")` to white out repititions of the first column, and align it to stick to the top of the cell. Behold, the final output (with rows chopped for brevity):
 
 ```{r}
 kable_pandas(
@@ -303,16 +316,9 @@ kable_pandas(
 
 Try hovering over the rows to see an extra visual aid that we're looking at a `MultiIndex`! I don't know about you but that looks a lot better than the default output to me. `r emo::ji("smirk")`
 
-## Bonuses! `r emo::ji("gift")`
+# Bonuses! `r emo::ji("gift")`
 
 If you use the `kable::kable_paper` you can actually get a pretty decent looking render in the RStudio IDE!!! `r emo::ji("wow")`
-
-```{r eval=FALSE}
-kable_pandas(
-  df = reticulate::py_eval("df"),
-  rmd = TRUE
-)
-```
 
 <p align="center">
   <img src="images/kable_pandas_rstudio.png">
@@ -321,7 +327,11 @@ kable_pandas(
 
 # Closing thoughts
 
-I hope you have enjoyed this brief tutorial of how to pretty print Python dataframes with RMarkdown. If you have any questions, suggestions or spot mistakes, please let me know! It should be clear that we are just scractching the surface with making Python dataframes prettier in the RMarkdown universe. Using `kableExtra` was neat because it had just the right features to allow flexibility to pull this off! One could go even further with this exercise by adding in column type information to the columns just like `{DT}`, for example. Or, maybe even making an interactive version with `reactable`? `r emo::ji("wink")`
+I hope you have enjoyed this brief tutorial of how to pretty print Python dataframes with RMarkdown. If you have any questions, suggestions or spot mistakes, please let me know! It should be clear that we are just scratching the surface with making Python dataframes prettier in the RMarkdown universe. 
+
+Using `kableExtra` was neat because it had just the right features to allow flexibility to pull this off! In particular, the `kableExtra::add_header_above` to add arbitrary levels of header rows is nice for displaying MultiIndex levels (for rows or columns). The `kableExtra::collapse_rows` is useful for multirow cells for repeating values in a given column. The only caveat is with this package is that it seems to not perform well for 1000s of rows but I believe this is a common bottleneck for most table making packages out there.
+
+One could go even further with this crazy exercise by adding in column type information to the columns just like [`{DT}`](https://rstudio.github.io/DT/), for example. Or, maybe even making an interactive version with [`{reactable}`](https://glin.github.io/reactable/)? `r emo::ji("wink")` Another promising package is [`{gt}`](https://gt.rstudio.com/articles/intro-creating-gt-tables.html), which offers the `stub` area for things like `MultiIndex`.
 
 # References
 
@@ -329,3 +339,8 @@ I hope you have enjoyed this brief tutorial of how to pretty print Python datafr
 - [{kableExtra}](http://haozhu233.github.io/kableExtra/)
 - [{formattable}](https://renkun-ken.github.io/formattable/index.html)
 - [{nycflights13}](https://github.com/hadley/nycflights13)
+- [Pandas](https://pandas.pydata.org/docs/)
+
+
+
+
