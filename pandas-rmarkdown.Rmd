@@ -283,11 +283,23 @@ I won't go over the setup part in much detail, but I want to highlight the "tric
 # base kbl
 setup_kbl <- rdf %>% 
   # this retains color for the row Index columns
-  dplyr::rename_with(function(x) kableExtra::cell_spec(x, "html", color = "black"), dplyr::any_of(row_index_cols)) %>% 
-  kableExtra::kbl(align = "l", escape = F, row.names = !is_multi_index)
+  dplyr::rename_with(
+    function(x) kableExtra::cell_spec(x, "html", color = "black"), 
+    dplyr::any_of(row_index_cols)
+  ) %>% 
+  kableExtra::kbl(align = "l", escape = F, row.names = show_rownames)
 ```
 
-Essentially, `row_index_cols` are the `MultiIndex` columns, so this is making the first base `kableExtra::kbl` by making keeping those columns black. 
+Essentially, `row_index_cols` are the `MultiIndex` columns, so this is making the first base `kableExtra::kbl` by making keeping those columns black. I also added a `show_rownames` boolean flag to show the `row.names` in case we just have a regular `DataFrame` like this one:
+
+```{r}
+kable_pandas(
+  df = reticulate::py_eval("df_basic"),
+  show_rownames = TRUE
+)
+```
+
+In this more basic form, we can see the Python 0-indexing!
 
 ### Raise the regular columns
 
@@ -297,13 +309,17 @@ For my next trick, I "raised" the regular columns by coloring the regular column
 final_kbl <- 
   setup_kbl %>% 
   kableExtra::row_spec(0, color = "white") %>%
-  kableExtra::add_header_above(c(" " = idx_column_space, column_space), align = "c", bold = T, line = F) %>% 
+  kableExtra::add_header_above(
+    c(" " = idx_column_space, column_space), 
+    align = "c", 
+    bold = T, 
+    line = F) %>% 
   kableExtra::collapse_rows(columns = 1, valign = "top")
 ```
 
 Here, the `idx_column_space` is the amount of columns to take up with `" "` because I want empty space above the `MultiIndex` columns. As for the `column_space`, it's a named list that provides key value pairs for the column name and the space the column should take up.
 
-### Display Multirow cells
+### Display multirow cells
 
 Remember how we did the `pydf$reset_index()` from before for our Python `DataFrame` that has a `MultiIndex`? Well, that produced repeating values for our `time_hour` column. So, one last trick to display this properly is to use `kableExtra::collapse_rows(columns = 1, valign = "top")` to white out repititions of the first column, and align it to stick to the top of the cell. Behold, the final output (with rows chopped for brevity):
 
@@ -312,7 +328,6 @@ kable_pandas(
   df = reticulate::py_eval("df")
 )
 ```
-
 
 Try hovering over the rows to see an extra visual aid that we're looking at a `MultiIndex`! I don't know about you but that looks a lot better than the default output to me. `r emo::ji("smirk")`
 
